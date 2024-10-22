@@ -1,11 +1,11 @@
 package localhost.api.products.entities;
 
-import jakarta.persistence.Column;
+import java.io.Serializable;
+
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -18,20 +18,21 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ProductCategory {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(insertable = false, updatable = false)
+	@EmbeddedId
 	@EqualsAndHashCode.Include
-	private Integer id;
+	private ProductCategory.Identity id;
 
-	@Column(length = 128, nullable = false)
-	private String name;
+	@Data
+	@Embeddable
+	public static class Identity implements Serializable {
+		private static final long serialVersionUID = 1L;
 
-	@Column(updatable = false, nullable = false)
-	private boolean root;
+		@ManyToOne(fetch = FetchType.LAZY, optional = false)
+		@JoinColumn(name = "product_id", nullable = false, updatable = false)
+		private Product product;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "parent_category_id", updatable = false)
-	private ProductCategory parentCategory;
-
+		@ManyToOne(fetch = FetchType.LAZY, optional = false)
+		@JoinColumn(name = "category_id", nullable = false, updatable = false)
+		private Category category;
+	}
 }

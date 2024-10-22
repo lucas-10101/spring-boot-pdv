@@ -1,0 +1,148 @@
+# yaml-language-server: $schema=https://json.schemastore.org/liquibase-3.2.json
+
+databaseChangeLog:
+
+  - changeSet:
+      id: init-db
+      author: lucas-10101
+      changes:
+        - tagDatabase:
+            tag: init-db
+
+  - changeSet:
+      id: create-products-table
+      author: lucas-10101
+      changes:
+        - createTable:
+            tableName: products
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(512)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: decimal(12, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: create-product_properties-table
+      author: lucas-10101
+      changes:
+        - createTable:
+            tableName: product_properties
+            columns:
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    referencedTableName: products
+                    referencedColumnNames: id
+                    foreignKeyName: fk__product_properties__product_id
+              - column:
+                  name: description
+                  type: varchar(256)
+                  constraints:
+                    nullable: false
+                    
+  - changeSet:
+      id: create-pk-product_properties
+      author: lucas-10101
+      changes:
+        - addPrimaryKey:
+            tableName: product_properties
+            columnNames: name, product_id
+            constraintName: pk_product_properties
+
+  - changeSet:
+      id: create-categories-table
+      author: lucas-10101
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: root
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: parent_category_id
+                  type: int
+                  constraints:
+                    referencedTableName: categories
+                    referencedColumnNames: id
+                    foreignKeyName: fk__categories__parent_category_id
+
+  - changeSet:
+      id: create-product_categories-table
+      author: lucas-10101
+      changes:
+        - createTable:
+            tableName: product_categories
+            columns:
+              - column:
+                  name: product_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    referencedTableName: products
+                    referencedColumnNames: id
+                    foreignKeyName: fk__product_categories_product_id
+              - column:
+                  name: category_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    referencedTableName: categories
+                    referencedColumnNames: id
+                    foreignKeyName: fk__product_categories_category_id
+                    
+  - changeSet:
+      id: create-pk-product_categories
+      author: lucas-10101
+      changes:
+        - addPrimaryKey:
+            tableName: product_categories
+            columnNames: product_id, category_id
+            constraintName: pk_product_categories
+
+  - changeSet:
+      id: version-0.0.1
+      author: lucas-10101
+      changes:
+        - tagDatabase:
+            tag: version-0.0.1

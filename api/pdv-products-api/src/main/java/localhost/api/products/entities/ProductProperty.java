@@ -31,7 +31,7 @@ public class ProductProperty {
 	public static class Identity implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		@Column(length = 64, nullable = false, updatable = false)
+		@Column(length = 128, nullable = false, updatable = false)
 		private String name;
 
 		@ManyToOne(fetch = FetchType.LAZY, optional = false)
