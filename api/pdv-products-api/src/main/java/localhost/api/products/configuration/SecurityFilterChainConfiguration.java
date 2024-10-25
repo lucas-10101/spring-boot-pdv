@@ -19,8 +19,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityFilterChainConfiguration {
 
 	@Bean
+	@Order(0)
 	@Profile("dev")
-	@Order(Ordered.HIGHEST_PRECEDENCE)
 	protected SecurityFilterChain h2SsecurityFilterChain(HttpSecurity http) throws Exception {
 
 		http.securityMatcher(AntPathRequestMatcher.antMatcher("/h2-console/**"));
@@ -52,6 +52,10 @@ public class SecurityFilterChainConfiguration {
 
 		http.rememberMe(rememberMe -> rememberMe.disable());
 		http.csrf(Customizer.withDefaults());
+
+		http.oauth2ResourceServer(resourceServer -> {
+			resourceServer.jwt(Customizer.withDefaults());
+		});
 
 		return http.build();
 	}
