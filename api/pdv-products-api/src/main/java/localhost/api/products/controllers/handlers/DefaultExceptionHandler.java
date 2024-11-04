@@ -2,8 +2,10 @@ package localhost.api.products.controllers.handlers;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -11,8 +13,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class DefaultExceptionHandler {
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	@ExceptionHandler(value = Exception.class)
-	public ResponseEntity<Object> translateDefaults(Exception e) {
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<Object> defaultHandler(Exception e) {
 		return ResponseEntity.internalServerError().contentType(MediaType.APPLICATION_JSON).body(null);
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<Object> handleAccessDeniedException(Exception e) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(null);
 	}
 }

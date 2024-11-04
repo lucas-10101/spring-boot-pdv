@@ -89,10 +89,22 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jeasy</groupId>
+			<artifactId>easy-random-core</artifactId>
+			<version>5.0.0</version>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>lucas-10101</groupId>
 			<artifactId>model-library</artifactId>
+			<version>${localhost.model-library.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>lucas-10101</groupId>
+			<artifactId>commons-library</artifactId>
 			<version>${localhost.model-library.version}</version>
 		</dependency>
 
