@@ -56,7 +56,7 @@ public class ProductRestController {
 	@Secured(Authorities.ProductsApi.READ_PRODUCTS)
 	public ResponseEntity<ProductModel> getProduct(@PathVariable Integer productId) {
 
-		var entity = this.service.findById(productId).orElseThrow(() -> new ResourceNotFoundException());
+		var entity = this.service.findById(productId).orElseThrow(new ResourceNotFoundException());
 
 		var product = mapper.map(entity, ProductModel.class);
 		return ResponseEntity.ok(product);

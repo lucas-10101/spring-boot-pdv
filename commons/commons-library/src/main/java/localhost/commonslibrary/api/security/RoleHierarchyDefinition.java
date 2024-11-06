@@ -27,7 +27,8 @@ public abstract class RoleHierarchyDefinition {
 	 */
 	protected Builder buildAdministrativeRoleHierarchy(Builder hierarchyBuilder) {
 		return hierarchyBuilder
-				.role(Authorities.ADMIN).implies(Authorities.ProductsApi.MANAGE_PRODUCTS);
+				.role(Authorities.ADMIN).implies(Authorities.ProductsApi.MANAGE_PRODUCTS)
+				.role(Authorities.ADMIN).implies(Authorities.ProductsApi.MANAGE_CATEGORIES);
 	}
 
 	/**
@@ -39,6 +40,7 @@ public abstract class RoleHierarchyDefinition {
 	protected Builder buildProductsApiRoleHierarchy(Builder hierarchyBuilder) {
 
 		return hierarchyBuilder
-				.role(Authorities.ProductsApi.MANAGE_PRODUCTS).implies(Authorities.ProductsApi.READ_PRODUCTS);
+				.role(Authorities.ProductsApi.MANAGE_PRODUCTS).implies(Authorities.ProductsApi.READ_PRODUCTS)
+				.role(Authorities.ProductsApi.MANAGE_CATEGORIES).implies(Authorities.ProductsApi.READ_CATEGORIES);
 	}
 }

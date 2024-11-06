@@ -54,7 +54,7 @@ public class ProductServiceTest {
 	@Test
 	@DisplayName("Return null on non existing id")
 	public void whenFindByNonExistingId_theReturnNull() {
-		assertNull(service.findById(Integer.MAX_VALUE));
+		assertNull(service.findById(Integer.MAX_VALUE).orElse(null));
 	}
 
 	@Test
