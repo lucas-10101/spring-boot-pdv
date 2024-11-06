@@ -32,6 +32,6 @@ public class Product {
 	@Column(precision = 12, scale = 2, nullable = false)
 	private BigDecimal price;
 
-	@Column(nullable = false)
+	@Column(nullable = false, updatable = false)
 	private boolean active;
 }

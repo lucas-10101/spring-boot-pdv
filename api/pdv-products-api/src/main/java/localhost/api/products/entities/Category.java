@@ -27,11 +27,11 @@ public class Category {
 	@Column(length = 128, nullable = false)
 	private String name;
 
-	@Column(updatable = false, nullable = false)
+	@Column(nullable = false)
 	private boolean root;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "parent_category_id", updatable = false)
+	@JoinColumn(name = "parent_category_id")
 	private Category parentCategory;
 
 }

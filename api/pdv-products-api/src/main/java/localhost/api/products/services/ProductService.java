@@ -1,5 +1,7 @@
 package localhost.api.products.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +35,8 @@ public class ProductService {
 		return repository.findAll(page);
 	}
 
-	public Product findById(Integer id) {
-		return repository.findById(id).orElse(null);
+	public Optional<Product> findById(Integer id) {
+		return repository.findById(id);
 	}
 
 	@Transactional

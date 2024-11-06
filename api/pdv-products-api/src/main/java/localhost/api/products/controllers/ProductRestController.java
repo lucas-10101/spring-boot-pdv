@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import localhost.api.products.entities.Product;
 import localhost.api.products.services.ProductService;
 import localhost.commonslibrary.api.security.Authorities;
+import localhost.modellibrary.api.exceptions.ResourceNotFoundException;
 import localhost.modellibrary.api.products.ProductModel;
 import localhost.modellibrary.validationgroups.CreateOrUpdate;
 
@@ -53,8 +54,11 @@ public class ProductRestController {
 
 	@GetMapping(path = "/{productId}")
 	@Secured(Authorities.ProductsApi.READ_PRODUCTS)
-	public ResponseEntity<Object> getProduct(@PathVariable Integer productId) {
-		var product = mapper.map(this.service.findById(productId), ProductModel.class);
+	public ResponseEntity<ProductModel> getProduct(@PathVariable Integer productId) {
+
+		var entity = this.service.findById(productId).orElseThrow(() -> new ResourceNotFoundException());
+
+		var product = mapper.map(entity, ProductModel.class);
 		return ResponseEntity.ok(product);
 	}
 

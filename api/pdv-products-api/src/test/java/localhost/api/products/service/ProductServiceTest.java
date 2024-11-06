@@ -66,7 +66,7 @@ public class ProductServiceTest {
 
 		product = service.save(product);
 
-		assertEquals(product.getId(), service.findById(product.getId()).getId());
+		assertEquals(product.getId(), service.findById(product.getId()).orElse(null).getId());
 
 	}
 
@@ -81,7 +81,7 @@ public class ProductServiceTest {
 		product = service.save(product);
 		service.disableById(product.getId());
 
-		product = service.findById(product.getId());
+		product = service.findById(product.getId()).orElse(null);
 
 		assertFalse(product.isActive());
 	}
@@ -97,7 +97,7 @@ public class ProductServiceTest {
 		product = service.save(product);
 		service.enableById(product.getId());
 
-		product = service.findById(product.getId());
+		product = service.findById(product.getId()).orElse(null);
 
 		assertTrue(product.isActive());
 	}

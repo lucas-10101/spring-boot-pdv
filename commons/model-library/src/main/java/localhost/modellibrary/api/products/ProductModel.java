@@ -10,13 +10,16 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import localhost.modellibrary.validationgroups.Update;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ProductModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Min(value = 1, groups = { Update.class })
+	@EqualsAndHashCode.Include
 	private Integer id;
 
 	@Size(min = 1, max = 128)
