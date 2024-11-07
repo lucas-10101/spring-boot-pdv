@@ -27,11 +27,11 @@ public class ProductCategory {
 	public static class Identity implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		@ManyToOne(fetch = FetchType.LAZY, optional = false)
+		@ManyToOne(fetch = FetchType.EAGER, optional = false)
 		@JoinColumn(name = "product_id", nullable = false, updatable = false)
 		private Product product;
 
-		@ManyToOne(fetch = FetchType.LAZY, optional = false)
+		@ManyToOne(fetch = FetchType.EAGER, optional = false)
 		@JoinColumn(name = "category_id", nullable = false, updatable = false)
 		private Category category;
 	}

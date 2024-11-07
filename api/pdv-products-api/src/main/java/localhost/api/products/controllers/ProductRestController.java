@@ -1,5 +1,8 @@
 package localhost.api.products.controllers;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +24,7 @@ import localhost.api.products.entities.Product;
 import localhost.api.products.services.ProductService;
 import localhost.commonslibrary.api.security.Authorities;
 import localhost.modellibrary.api.exceptions.ResourceNotFoundException;
+import localhost.modellibrary.api.products.CategoryModel;
 import localhost.modellibrary.api.products.ProductModel;
 import localhost.modellibrary.validationgroups.CreateOrUpdate;
 
@@ -74,6 +78,28 @@ public class ProductRestController {
 	public ResponseEntity<Void> enableProduct(@PathVariable Integer productId) {
 		this.service.enableById(productId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+	}
+
+	@PutMapping(path = "/{productId}/add-category/{categoryId}")
+	@Secured(Authorities.ProductsApi.MANAGE_PRODUCTS)
+	public ResponseEntity<Void> addCategoryToProduct(@PathVariable Integer productId, @PathVariable Integer categoryId) {
+		this.service.addCategoryToProductCategory(categoryId, productId);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
+	}
+
+	@PutMapping(path = "/{productId}/remove-category/{categoryId}")
+	@Secured(Authorities.ProductsApi.MANAGE_PRODUCTS)
+	public ResponseEntity<Void> rempveCategoryToProduct(@PathVariable Integer productId, @PathVariable Integer categoryId) {
+		this.service.removeCategoryFromProduct(categoryId, productId);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
+	}
+
+	@GetMapping(path = "/{productId}/categories")
+	@Secured(Authorities.ProductsApi.READ_PRODUCTS)
+	public ResponseEntity<Collection<CategoryModel>> getProductCategories(@PathVariable Integer productId) {
+		var mapped = this.service.getProductCategories(productId).stream().map(e -> mapper.map(e, CategoryModel.class)).collect(Collectors.toList());
+
+		return ResponseEntity.ok(mapped);
 	}
 
 }

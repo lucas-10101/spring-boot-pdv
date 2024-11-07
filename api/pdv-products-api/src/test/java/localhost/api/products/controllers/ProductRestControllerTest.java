@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Collection;
+
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,11 +23,15 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import localhost.api.products.entities.Category;
 import localhost.api.products.entities.Product;
+import localhost.api.products.services.CategoryService;
 import localhost.api.products.services.ProductService;
 import localhost.commonslibrary.api.security.Authorities;
+import localhost.modellibrary.api.products.CategoryModel;
 import localhost.modellibrary.api.products.ProductModel;
 
 @AutoConfigureMockMvc
@@ -43,6 +49,9 @@ public class ProductRestControllerTest {
 
 	@Autowired
 	private ProductService productService;
+
+	@Autowired
+	private CategoryService categoryService;
 
 	@Test
 	@DisplayName("Test the save controller method with product creation")
@@ -178,5 +187,84 @@ public class ProductRestControllerTest {
 	@WithMockUser(username = "mockuser", authorities = {})
 	public void whenEnablingProductWhitoutPermission_shoudReturnForbidden() throws Exception {
 		mvc.perform(put("/products/1/disable").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Test adding categories to product")
+	@WithMockUser(username = "mockuser", authorities = { Authorities.ProductsApi.MANAGE_PRODUCTS })
+	public void whenAddingCategoryToProduct_shoudAddToLink() throws Exception {
+
+		Product product = easyRandom.nextObject(Product.class);
+		product.setId(null);
+
+		product = productService.save(product);
+
+		Category category = easyRandom.nextObject(Category.class);
+		category.setId(null);
+		category.setParentCategory(null);
+
+		category = categoryService.save(category);
+
+		mvc.perform(put("/products/%d/add-category/%d".formatted(product.getId(), category.getId())).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isAccepted());
+
+		var linked = this.productService.getProductCategories(product);
+
+		assertTrue(linked.contains(category));
+
+	}
+
+	@Test
+	@DisplayName("Test removing categories to product")
+	@WithMockUser(username = "mockuser", authorities = { Authorities.ProductsApi.MANAGE_PRODUCTS })
+	public void whenRemovingCategoryToProduct_shoudRemoveFromLink() throws Exception {
+
+		Product product = easyRandom.nextObject(Product.class);
+		product.setId(null);
+
+		product = productService.save(product);
+
+		Category category = easyRandom.nextObject(Category.class);
+		category.setId(null);
+		category.setParentCategory(null);
+
+		category = categoryService.save(category);
+
+		this.productService.addCategoryToProduct(category, product);
+
+		mvc.perform(put("/products/%d/remove-category/%d".formatted(product.getId(), category.getId())).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isAccepted());
+
+		var linked = this.productService.getProductCategories(product);
+
+		assertFalse(linked.contains(category));
+
+	}
+
+	@Test
+	@DisplayName("Test listing categories")
+	@WithMockUser(username = "mockuser", authorities = { Authorities.ProductsApi.MANAGE_PRODUCTS })
+	public void whenListingCategoriesFromProduct_shoudReturnAnCollection() throws Exception {
+
+		Product product = easyRandom.nextObject(Product.class);
+		product.setId(null);
+
+		product = productService.save(product);
+
+		Category category = easyRandom.nextObject(Category.class);
+		category.setId(null);
+		category.setParentCategory(null);
+
+		category = categoryService.save(category);
+
+		this.productService.addCategoryToProduct(category, product);
+
+		String response = mvc.perform(get("/products/%d/categories".formatted(product.getId())).contentType(MediaType.APPLICATION_JSON)).andReturn()
+				.getResponse().getContentAsString();
+		Collection<CategoryModel> responseMapped = objectMapper.readValue(response, new TypeReference<Collection<CategoryModel>>() {
+		});
+
+		assertFalse(responseMapped.isEmpty());
+
 	}
 }
