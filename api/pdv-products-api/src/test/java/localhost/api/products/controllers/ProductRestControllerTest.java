@@ -1,6 +1,7 @@
 package localhost.api.products.controllers;
 
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -10,6 +11,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.jeasy.random.EasyRandom;
@@ -33,6 +36,7 @@ import localhost.api.products.services.ProductService;
 import localhost.commonslibrary.api.security.Authorities;
 import localhost.modellibrary.api.products.CategoryModel;
 import localhost.modellibrary.api.products.ProductModel;
+import localhost.modellibrary.api.products.PropertyModel;
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
@@ -266,5 +270,105 @@ public class ProductRestControllerTest {
 
 		assertFalse(responseMapped.isEmpty());
 
+	}
+
+	@Test
+	@DisplayName("Test add property to product")
+	@WithMockUser(username = "mockuser", authorities = { Authorities.ProductsApi.MANAGE_PRODUCTS })
+	public void whenAddingProperty_shoudReturnOk() throws Exception {
+
+		Product product = easyRandom.nextObject(Product.class);
+		product.setId(null);
+
+		product = productService.save(product);
+
+		PropertyModel model = easyRandom.nextObject(PropertyModel.class);
+		String payload = objectMapper.writeValueAsString(model);
+
+		mvc.perform(put("/products/%d/save-property".formatted(product.getId())).content(payload).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+	}
+
+	@Test
+	@DisplayName("Test remove property to product")
+	@WithMockUser(username = "mockuser", authorities = { Authorities.ProductsApi.MANAGE_PRODUCTS })
+	public void whenRemovingProperty_shouReturnOk() throws Exception {
+
+		Product product = easyRandom.nextObject(Product.class);
+		product.setId(null);
+
+		product = productService.save(product);
+
+		this.productService.saveProductProperty(product.getId(), "test", "test");
+
+		mvc.perform(put("/products/%d/remove-property?property=%s".formatted(product.getId(), "test")).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+	}
+
+	@Test
+	@DisplayName("Test get product properties")
+	@WithMockUser(username = "mockuser", authorities = { Authorities.ProductsApi.MANAGE_PRODUCTS })
+	public void whenListingProductProperties_shoudReturnAnCollection() throws Exception {
+
+		// adding objects
+
+		Product product = easyRandom.nextObject(Product.class);
+		product.setId(null);
+
+		product = productService.save(product);
+
+		this.productService.saveProductProperty(product.getId(), "p-1", "test");
+
+		PropertyModel model1 = new PropertyModel(), model2 = new PropertyModel();
+		model1.setName("p-1");
+		model1.setDescription("test");
+
+		model2.setName("p-2");
+		model2.setDescription("test");
+		String payload = objectMapper.writeValueAsString(model1);
+
+		mvc.perform(put("/products/%d/save-property".formatted(product.getId())).content(payload).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		payload = objectMapper.writeValueAsString(model2);
+		mvc.perform(put("/products/%d/save-property".formatted(product.getId())).content(payload).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		// actual test
+
+		String response = mvc.perform(get("/products/%d/properties".formatted(product.getId())).contentType(MediaType.APPLICATION_JSON)).andReturn()
+				.getResponse().getContentAsString();
+
+		Collection<PropertyModel> expected = new ArrayList<>(Arrays.asList(model1, model2));
+		Collection<PropertyModel> colletion = objectMapper.readValue(response, new TypeReference<Collection<PropertyModel>>() {
+		});
+
+		assertEquals(expected, colletion);
+	}
+
+	@Test
+	@DisplayName("Testing dening when save product property without permission")
+	@WithMockUser(username = "mockuser", authorities = {})
+	public void whenAddingPropertyWithoudPermission_shoudReturnForbidden() throws Exception {
+
+		PropertyModel model = easyRandom.nextObject(PropertyModel.class);
+		String payload = objectMapper.writeValueAsString(model);
+		mvc.perform(put("/products/1/save-property").content(payload).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Testing dening when removing product property without permission")
+	@WithMockUser(username = "mockuser", authorities = {})
+	public void whenRemovingPropertyWithoudPermission_shoudReturnForbidden() throws Exception {
+		mvc.perform(put("/products/1/remove-property?property=test").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Testing dening when querying product without permission")
+	@WithMockUser(username = "mockuser", authorities = {})
+	public void zzzzzz_whenEnablingProductWhitoutPermission_shoudReturnForbidden() throws Exception {
+		mvc.perform(get("/products/1/properties").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
 	}
 }

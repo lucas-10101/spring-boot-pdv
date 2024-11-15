@@ -18,14 +18,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import localhost.api.products.entities.Product;
 import localhost.api.products.services.ProductService;
 import localhost.commonslibrary.api.security.Authorities;
 import localhost.modellibrary.api.exceptions.ResourceNotFoundException;
 import localhost.modellibrary.api.products.CategoryModel;
 import localhost.modellibrary.api.products.ProductModel;
+import localhost.modellibrary.api.products.PropertyModel;
 import localhost.modellibrary.validationgroups.CreateOrUpdate;
 
 @RestController
@@ -89,7 +92,7 @@ public class ProductRestController {
 
 	@PutMapping(path = "/{productId}/remove-category/{categoryId}")
 	@Secured(Authorities.ProductsApi.MANAGE_PRODUCTS)
-	public ResponseEntity<Void> rempveCategoryToProduct(@PathVariable Integer productId, @PathVariable Integer categoryId) {
+	public ResponseEntity<Void> removeCategoryToProduct(@PathVariable Integer productId, @PathVariable Integer categoryId) {
 		this.service.removeCategoryFromProduct(categoryId, productId);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
 	}
@@ -102,4 +105,26 @@ public class ProductRestController {
 		return ResponseEntity.ok(mapped);
 	}
 
+	@PutMapping(path = "/{productId}/save-property")
+	@Secured(Authorities.ProductsApi.MANAGE_PRODUCTS)
+	public ResponseEntity<Void> saveProductProperty(@PathVariable Integer productId, @Valid @RequestBody PropertyModel model) {
+		this.service.saveProductProperty(productId, model.getName(), model.getDescription());
+		return ResponseEntity.ok(null);
+	}
+
+	@PutMapping(path = "/{productId}/remove-property")
+	@Secured(Authorities.ProductsApi.MANAGE_PRODUCTS)
+	public ResponseEntity<Void> removeProductProperty(@PathVariable Integer productId, @RequestParam(required = true, name = "property") String keyName) {
+		this.service.removeProductProperty(productId, keyName);
+		return ResponseEntity.ok(null);
+	}
+
+	@GetMapping(path = "/{productId}/properties")
+	@Secured(Authorities.ProductsApi.READ_PRODUCTS)
+	public ResponseEntity<Collection<PropertyModel>> getProperties(@PathVariable Integer productId) {
+
+		var content = this.service.getProductProperties(productId).stream().map(e -> mapper.map(e, PropertyModel.class)).collect(Collectors.toList());
+
+		return ResponseEntity.ok(content);
+	}
 }

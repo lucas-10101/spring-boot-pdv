@@ -3,7 +3,7 @@ package localhost.modellibrary.api.products;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,7 +16,7 @@ public class CategoryModel {
 	private Integer id;
 
 	@Size(min = 1, max = 128)
-	@NotNull
+	@NotBlank
 	private String name;
 
 	@JsonProperty(access = Access.READ_ONLY)

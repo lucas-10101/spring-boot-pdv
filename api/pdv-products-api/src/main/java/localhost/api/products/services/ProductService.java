@@ -14,7 +14,9 @@ import jakarta.transaction.Transactional;
 import localhost.api.products.entities.Category;
 import localhost.api.products.entities.Product;
 import localhost.api.products.entities.ProductCategory;
+import localhost.api.products.entities.ProductProperty;
 import localhost.api.products.repositories.ProductCategoryRepository;
+import localhost.api.products.repositories.ProductPropertyRepository;
 import localhost.api.products.repositories.ProductRepository;
 import localhost.modellibrary.api.exceptions.ResourceNotFoundException;
 
@@ -26,6 +28,9 @@ public class ProductService {
 
 	@Autowired
 	private ProductCategoryRepository productCategoryRepository;
+
+	@Autowired
+	private ProductPropertyRepository productPropertyRepository;
 
 	@Autowired
 	private CategoryService categoryService;
@@ -119,5 +124,54 @@ public class ProductService {
 				.stream()
 				.map(r -> r.getCategory())
 				.collect(Collectors.toList());
+	}
+
+	public void saveProductProperty(Integer productId, String propertyName, String propertyDescription) {
+		Product product = this.findById(productId).orElseThrow(new ResourceNotFoundException());
+		this.saveProductProperty(product, propertyName, propertyDescription);
+	}
+
+	public void saveProductProperty(Product product, String propertyName, String propertyDescription) {
+
+		if (!this.repository.existsById(product.getId())) {
+			throw new ResourceNotFoundException();
+		}
+
+		var id = new ProductProperty.Identity();
+		id.setProduct(product);
+		id.setName(propertyName);
+
+		ProductProperty property = new ProductProperty();
+		property.setId(id);
+		property.setDescription(propertyDescription);
+
+		this.productPropertyRepository.save(property);
+	}
+
+	public void removeProductProperty(Integer productId, String propertyName) {
+		Product product = this.findById(productId).orElseThrow(new ResourceNotFoundException());
+		this.removeProductProperty(product, propertyName);
+	}
+
+	public void removeProductProperty(Product product, String propertyName) {
+
+		if (!this.repository.existsById(product.getId())) {
+			throw new ResourceNotFoundException();
+		}
+
+		var id = new ProductProperty.Identity();
+		id.setProduct(product);
+		id.setName(propertyName);
+
+		this.productPropertyRepository.deleteById(id);
+	}
+
+	public Collection<ProductProperty> getProductProperties(Integer productId) {
+		Product product = this.findById(productId).orElseThrow(new ResourceNotFoundException());
+		return this.productPropertyRepository.findAllByIdProduct(product);
+	}
+
+	public Collection<ProductProperty> getProductProperties(Product product) {
+		return this.productPropertyRepository.findAllByIdProduct(product);
 	}
 }
