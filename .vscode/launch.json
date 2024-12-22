@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Main<pdv-products-api>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "localhost.api.products.Main",
+            "projectName": "pdv-products-api",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-Main<pdv-discovery-server>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "localhost.discoveryserver.eureka.Main",
+            "projectName": "pdv-discovery-server",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
