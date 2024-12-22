@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://json.schemastore.org/liquibase-3.2.json
+databaseChangeLog:
+  - changeSet:
+      id: tagdb
+      author: lucas-10101
+      changes:
+        - tagDatabase:
+            tag: db-start
+
+  - changeSet:
+      id: create-product-stock-table
+      author: lucas-10101
+      changes:
+        - createTable:
+            tableName: product_stock
+            columns:
+              - column:
+                  name: product_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+
+              - column:
+                  name: quantity_in_stock
+                  type: int
+                  constraints:
+                    nullable: false
