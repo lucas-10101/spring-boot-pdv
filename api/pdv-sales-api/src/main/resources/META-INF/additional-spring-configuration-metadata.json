@@ -1,0 +1,19 @@
+{
+    "properties": [
+        {
+            "name": "eureka.client.service-url.defaultZone",
+            "type": "java.lang.String",
+            "description": "A description for 'eureka.client.service-url.defaultZone'"
+        },
+        {
+            "name": "eureka.client.refresh.enable",
+            "type": "java.lang.String",
+            "description": "A description for 'eureka.client.refresh.enable'"
+        },
+        {
+            "name": "eureka.client.enabled",
+            "type": "java.lang.String",
+            "description": "A description for 'eureka.client.enabled'"
+        }
+    ]
+}

@@ -1,4 +1,4 @@
-package lucas10101.pdv_sales_api;
+package locahost.api.sales;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

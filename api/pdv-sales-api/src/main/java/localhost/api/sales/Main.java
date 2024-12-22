@@ -1,13 +1,13 @@
-package lucas10101.pdv_sales_api;
+package localhost.api.sales;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PdvSalesApiApplication {
+public class Main {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PdvSalesApiApplication.class, args);
+		SpringApplication.run(Main.class, args);
 	}
 
 }
